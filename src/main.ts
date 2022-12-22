@@ -7,17 +7,12 @@ import { Balancer } from './Balancer.js'
 import { Router } from './router/Router.js';
 import { METHOD } from './helpers/statusCode.js';
 
-let port = 4000
+let port = 4001
 
 const server = new Server()
 server.listen(port, () => {
   console.log('Server Start')
 })
-
-const router = new Router()
-router.get('users', () => {})
-
-console.log(router.endpoints)
 
 // if (cluster.isPrimary) {
 //   const balancer = new Balancer()

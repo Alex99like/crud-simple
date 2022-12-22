@@ -6,9 +6,10 @@ export class Router {
     this.endpoints = {}
   }
 
-  add(method: METHOD = METHOD.GET, endpoint: string, handler: IHandler) {
-    const path = { [method]: handler } 
-    this.endpoints[endpoint] = path
+  add(method: METHOD = METHOD.GET, path: string, handler: IHandler) {
+    if (!this.endpoints[path]) this.endpoints[path] = {}
+    const endpoint = this.endpoints[path]
+    endpoint[method] = handler
   }
 
   get(path: string, handler: IHandler) {
