@@ -4,20 +4,32 @@ import cluster, { Worker } from 'cluster'
 import process from 'process'
 import os from 'os'
 import { Balancer } from './Balancer.js'
+import { Router } from './router/Router.js';
+import { METHOD } from './helpers/statusCode.js';
 
 let port = 4000
 
-if (cluster.isPrimary) {
-  const balancer = new Balancer()
+const server = new Server()
+server.listen(port, () => {
+  console.log('Server Start')
+})
 
-  balancer.listen(port, () => {
-    console.log(`Balancer: ${port}`)
-  })
-} else {
-  const worker = new Server()
+const router = new Router()
+router.get('users', () => {})
 
-  worker.listen(port + cluster.worker!.id, () => {
-    console.log(`Listen Port: ${port + cluster.worker!.id}`)
-  })
-}
+console.log(router.endpoints)
+
+// if (cluster.isPrimary) {
+//   const balancer = new Balancer()
+
+//   balancer.listen(port, () => {
+//     console.log(`Balancer: ${port}`)
+//   })
+// } else {
+//   const worker = new Server()
+
+//   worker.listen(port + cluster.worker!.id, () => {
+//     console.log(`Listen Port: ${port + cluster.worker!.id}`)
+//   })
+// }
 
