@@ -1,17 +1,18 @@
 import { Server } from './Server.js';
-import http from 'http'
-import cluster, { Worker } from 'cluster'
-import process from 'process'
-import os from 'os'
-import { Balancer } from './Balancer.js'
-import { Router } from './router/Router.js';
-import { METHOD } from './helpers/statusCode.js';
+import { config } from 'dotenv'
+config()
+//import http from 'http'
+//import cluster, { Worker } from 'cluster'
+//import process from 'process'
+//import os from 'os'
+//import { Balancer } from './Balancer.js'
+//import { METHOD } from './helpers/statusCode.js';
 
-let port = 4001
+let port = process.env.PORT || 4000
 
 const server = new Server()
-server.listen(port, () => {
-  console.log('Server Start')
+server.listen(+port, () => {
+  console.log(`Server Start: ${port}`)
 })
 
 // if (cluster.isPrimary) {
