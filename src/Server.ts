@@ -3,127 +3,8 @@ import { UserService } from './service/User.js';
 import { HttpCode, METHOD, ReqType, ResType } from './helpers/statusCode.js';
 import { IUser } from './helpers/user.interface.js';
 import EventEmitter from 'events'
-import { checkReq } from './helpers/checkReq.js';
+import { checkCreate, checkUpdate } from './helpers/checkReq.js';
 import { v4, validate } from 'uuid'
-import { URL } from 'url'
-
-// export class Server {
-//   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>
-//   port: undefined | number;
-//   service: UserService
-//   db: IUser[]
-//   emitter: EventEmitter;
-
-//   constructor() {
-//     this.port = undefined;
-//     this.db = [{ age: 21, id: '21123', hobbies: [], username: 'Alex' }]
-//     this.server = this.createServer()
-//     this.emitter = new EventEmitter()
-    
-//     this.service = new UserService(this.db)
-//     this.createEndpoints()
-//   }
-
-//   listen(port: number, callback: () => void) {
-//     this.port = port
-//     this.server.listen(port, callback)
-//   }
-
-//   createEndpoints() {
-//     this.emitter.on(this.createPath(METHOD.GET), this.getUsers.bind(this))
-//     this.emitter.on(this.createPath(METHOD.POST), this.createUser.bind(this))
-//     this.emitter.on(this.createPath(METHOD.PUT), this.updateUser.bind(this))
-//     this.emitter.on(this.createPath(METHOD.DELETE), this.deleteUser.bind(this))
-//   }
-
-//   getUsers(req: ReqType, res: ResType, parameter: string) {
-//     if (parameter) {
-//       const [user] = this.db.filter(el => el.id === parameter) 
-//       if (user) {
-//         res.writeHead(HttpCode.Success)
-//         res.send(user)
-//       } else {
-//         res.writeHead(HttpCode.BadReq)
-//         res.end()
-//       }
-
-//     } else {
-//       res.send(this.db)
-//     }
-//   }
-
-//   createUser(req: ReqType, res: ResType) {
-    // let body = ''
-    // req.on('data', (chunk) => {
-    //   body += chunk
-    // })
-    // req.on('end', () => {
-    //   const user = JSON.parse(body)
-    //   const errors = checkReq(user)
-
-    //   if (errors.length === 0) {
-    //     this.db.push({ id: v4(), username: user.username, age: user.age, hobbies: user.hobbies })
-    //     res.writeHead(HttpCode.Created)
-    //     res.send(user)
-    //   } else {
-    //     res.writeHead(HttpCode.BadReq)
-    //     res.send({ errors })
-    //   }
-    // })
-//   }
-
-//   updateUser(req: ReqType, res: ResType, parameter: string) {
-//     if (parameter) {
-//       const [user] = this.db.filter(el => el.id === parameter)
-//       if (user) {
-//         let body = ''
-//         req.on('data', (chunk) => {
-//           body += chunk
-//         })
-//         req.on('end', () => {
-          
-//         })
-//       }
-//     } else {
-//       res.writeHead(HttpCode.NotFound)
-//       res.end()
-//     }
-//   }
-
-//   deleteUser(req: ReqType, res: ResType, parameter: string) {
-//     if (!parameter) {
-//       res.writeHead(HttpCode.NotFound)
-//       res.end()
-//     }
-
-//     const [user] = this.db.filter(el => el.id === parameter)
-//     this.db = this.db.filter(el => el.id !== parameter)
-//     if (!user) {
-//       res.writeHead(HttpCode.BadReq)
-//     } else {
-//       res.writeHead(HttpCode.Delete)
-//     }
-    
-//     res.end()
-//   }
-
-//   createPath(method: string) {
-//     return `api/users:${method}`
-//   }
-
-//   createServer() {
-//     return http.createServer((req, res) => {
-//       (res as ResType).send = (data) => {
-//         res.end(JSON.stringify(data))
-//       }
-
-//       const [root, path, parameter] = req.url!.split('/').slice(1)
-
-//       const emit = this.emitter.emit(`${root}/${path}:${req.method}`, req, res, parameter)
-//       if (!emit) (res as ResType).send({message: HttpCode.NotFound })
-//     })
-//   }
-// }
 
 export class Server {
   db: IUser[];
@@ -142,7 +23,7 @@ export class Server {
       const [user] = this.db.filter(el => el.id === parameter)
       if (user) {
         if (validate(user.id)) {
-          res.send(user)
+          res.send(HttpCode.Success, user)
         } else {
           res.writeHead(HttpCode.BadReq)
           res.end()
@@ -152,7 +33,7 @@ export class Server {
         res.end()
       }
     } else {
-      res.send(this.db)
+      res.send(HttpCode.Success, this.db)
     }
   }
 
@@ -168,25 +49,79 @@ export class Server {
       })
 
       req.on('end', () => {
-        const user = JSON.parse(body)
-        const errors = checkReq(user)
+        try {
+          const user = JSON.parse(body)
+          const errors = checkCreate(user)
 
-        if (errors.length === 0) {
-          const id = v4()
-          this.db.push({ id, username: user.username, age: user.age, hobbies: user.hobbies })
-          res.writeHead(HttpCode.Created)
-          res.send({ id, ...user })
-        } else {
-          res.writeHead(HttpCode.BadReq)
-          res.send({ errors })
-        }
+          if (errors.length === 0) {
+            const id = v4()
+            this.db.push({ id, username: user.username, age: user.age, hobbies: user.hobbies })
+            res.send(HttpCode.Created, { id, ...user })
+          } else {
+            res.writeHead(HttpCode.BadReq)
+            res.send(HttpCode.BadReq, { errors })
+          }
+        } catch(e) {}
+        
       })
     }
+  }
+
+  updateUser(req: ReqType, res: ResType, parameter: string) {
+    if (!parameter) {
+      res.writeHead(HttpCode.NotFound)
+      res.end()
+      return
+    }
+
+    let body = ''
+    req.on('data', (chunk) => {
+      body += chunk
+    })
+    req.on('end', () => {
+      const user = JSON.parse(body)
+      const errors = checkUpdate(user)
+
+      if (errors.length === 0) {
+        let resData: IUser | undefined = undefined
+        this.db = this.db.map((el) => {
+          if (el.id === parameter) {
+            const userItem = {
+              id: user.id ? user.id : el.id,
+              username: user.username ? user.username : el.username,
+              age: user.age ? user.age : el.age,
+              hobbies: user.hobbies ? user.hobbies : el.hobbies,
+            }
+            resData = userItem
+            return userItem
+          } else {
+            return el
+          }
+        })
+        res.send(HttpCode.Success, resData)
+        
+      } else {
+        res.send(HttpCode.BadReq, { errors })
+      }
+    })
+  }
+
+  removeUser(req: ReqType, res: ResType, parameter: string) {
+    const [user] = this.db.filter(el => el.id === parameter)
+    if (!user) {
+      res.writeHead(HttpCode.NotFound)
+      res.end()
+      return
+    }
+    this.db = this.db.filter(el => el.id !== parameter)
+    res.send(HttpCode.Delete , user)
   }
 
   setEndpoints() {
     this.emitter.on(this.path(METHOD.GET), this.getUser.bind(this))
     this.emitter.on(this.path(METHOD.POST), this.createUser.bind(this))
+    this.emitter.on(this.path(METHOD.PUT), this.updateUser.bind(this))
+    this.emitter.on(this.path(METHOD.DELETE), this.removeUser.bind(this))
   }
 
   listen(port: string | number, cb: () => void) {
@@ -201,18 +136,19 @@ export class Server {
   createServer() {
     return http.createServer((req, res) => {
 
-      (res as ResType).send = (data: any) => {
-        res.writeHead(HttpCode.Success)
+      (res as ResType).send = (code: HttpCode, data: any) => {
+        res.writeHead(code)
         res.end(JSON.stringify(data))
       }
 
       const [root = '', path = '', parameter] = req.url!.split('/').slice(1)
       const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter)
-
+      
       if (!emit) {
         res.writeHead(HttpCode.NotFound)
         res.end()
       }
+  
     })
   }
 }

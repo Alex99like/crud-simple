@@ -18,6 +18,6 @@ export enum METHOD {
 }
 
 export type ReqType = http.IncomingMessage & { body: any, pathname: string, params: Record<string, string> }
-export type ResType = http.ServerResponse<http.IncomingMessage> & { req: http.IncomingMessage; send: (data: any) => void  }
+export type ResType = http.ServerResponse<http.IncomingMessage> & { req: http.IncomingMessage; send: (code: HttpCode, data: any) => void  }
 
 export type IHandler = (req: ReqType, res: ResType) => void
