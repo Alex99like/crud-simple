@@ -34,6 +34,7 @@ export class Server {
     this.server = this.createServer()
     this.userService = new UserService()
     this.setEndpoints()
+    this.listenMaster()
   }
 
   setEndpoints() {
@@ -41,6 +42,16 @@ export class Server {
     this.emitter.on(this.path(METHOD.POST), this.userService.createUser.bind(this))
     this.emitter.on(this.path(METHOD.PUT), this.userService.updateUser.bind(this))
     this.emitter.on(this.path(METHOD.DELETE), this.userService.removeUser.bind(this))
+  }
+
+  sendDB(db: IUser[]) {
+    process.send && process.send(db)
+  }
+
+  listenMaster() {
+    process.on('message', (data) => {
+      this.db = data as IUser[]
+    })
   }
 
   listen(port: string | number, cb: () => void) {
@@ -60,8 +71,10 @@ export class Server {
       }
 
       const [root = '', path = '', parameter] = req.url!.split('/').slice(1)
-      const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db)
+      const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
       
+      
+
       if (!emit) {
         res.writeHead(HttpCode.NotFound)
         res.end()
