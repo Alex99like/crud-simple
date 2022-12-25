@@ -54,7 +54,6 @@ export class Server {
   
   createServer() {
     return http.createServer((req, res) => {
-
       (res as ResType).send = (code: HttpCode, data: any) => {
         res.writeHead(code)
         res.end(JSON.stringify(data))

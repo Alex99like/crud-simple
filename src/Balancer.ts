@@ -11,7 +11,7 @@ export class Balancer {
   constructor() {
     this.cpus = os.cpus().length
     this.workers = []
-    this.workCount = this.cpus - 2
+    this.workCount = 0
     this.server = this.createServer()
     this.createWorks()
     this.exit()
@@ -28,23 +28,54 @@ export class Balancer {
   }
 
   createWorks() {
-    for (let i = 1; i < os.cpus().length; i++) {
+    for (let i = 0; i < os.cpus().length; i++) {
       const worker = cluster.fork()
       this.workers.push(worker)
     }
   }
 
+  switchWorker() {
+    const currentId = this.workers[this.workCount].id
+    if (this.workers.length - 1 === this.workCount) {
+      this.workCount = 0
+    } else {
+      this.workCount += 1
+    } 
+
+    return currentId
+  }
+
   createServer() {
     return http.createServer((req, res) => {
-      this.workers[this.workCount].send(req.method!)
-      this.workers[this.workCount].once('message', (data) => {
-        res.end(data)
-        if (this.workCount === 0) {
-          this.workCount = os.cpus().length - 2
-        } else {
-          this.workCount -= 1
-        }
+      let body = ''
+      req.on('data', (chunk) => {
+        body += chunk
       })
+
+      req.on('end', () => {
+
+        const currentId = this.switchWorker()
+        console.log(currentId)
+
+        const request = http.request({
+          host: 'localhost',
+          port: 4000 + currentId,
+          path: req.url,
+          method: req.method,
+        })
+        request.write(body)
+        request.end()
+        request.on('response', (resWorker) => {
+          let body = ''
+          resWorker.on('data', (chunk) => {
+            body += chunk
+          })
+          resWorker.on('end', () => {
+            res.end(body)
+          })
+        })
+      })
+      
     })
   }
 }
