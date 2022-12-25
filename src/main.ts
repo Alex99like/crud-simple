@@ -1,18 +1,10 @@
 import { Server } from './Server.js';
 import { config } from 'dotenv'
 config()
-//import http from 'http'
-import cluster, { Worker } from 'cluster'
-//import process from 'process'
-//import os from 'os'
+import cluster from 'cluster'
 import { Balancer } from './Balancer.js'
 
 let port = process.env.PORT || 4000
-
-// const server = new Server()
-// server.listen(+port, () => {
-//   console.log(`Server Start: ${port}`)
-// })
 
 if (cluster.isPrimary) {
   const balancer = new Balancer()

@@ -70,16 +70,18 @@ export class Server {
         res.end(JSON.stringify(data))
       }
 
-      const [root = '', path = '', parameter] = req.url!.split('/').slice(1)
-      const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
-      
-      
-
-      if (!emit) {
+      const [root = '', path = '', parameter, error] = req.url!.split('/').slice(1)
+      if (error) {
         res.writeHead(HttpCode.NotFound)
-        res.end()
+        res.end(JSON.stringify(`this url does not exist`))
+      } else {
+        const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
+      
+        if (!emit) {
+          res.writeHead(HttpCode.NotFound)
+          res.end(JSON.stringify(`this url does not exist`))
+        }
       }
-  
     })
   }
 }

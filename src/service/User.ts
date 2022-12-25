@@ -52,11 +52,15 @@ export class UserService {
   }
 
   updateUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
-    if (!parameter) {
-      res.send(HttpCode.NotFound, { message: `Not Found: id not specified` })
+    const index = db.findIndex(el => el.id === parameter)
+    if (parameter) {
+      res.send(HttpCode.BadReq, { message: `id not specified` })
+      return
+    } else if (index === -1) {
+      res.send(HttpCode.NotFound, { message: `Not Found: we won't find a user with this id` })
       return
     } else if (!validate(parameter)) {
-      res.send(HttpCode.NotFound, { message: `this Id: ${parameter} is not valid` })
+      res.send(HttpCode.BadReq, { message: `this Id: ${parameter} is not valid` })
       return
     } else {
       let body = ''
@@ -69,10 +73,10 @@ export class UserService {
           const errors = checkUpdate(user)
 
           if (errors.length === 0) {
-            const index = db.findIndex(el => el.id === parameter)
+            
             const prevItem = db[index] 
             const userItem = {
-              id: user.id ? user.id : prevItem.id,
+              id: prevItem.id,
               username: user.username ? user.username : prevItem.username,
               age: user.age ? user.age : prevItem.age,
               hobbies: user.hobbies ? user.hobbies : prevItem.hobbies,
@@ -99,15 +103,15 @@ export class UserService {
     if (!parameter) {
       res.send(HttpCode.BadReq, { message: `id not specified` })
       return
+    } else if (userI === -1) {
+      res.send(HttpCode.BadReq, { message: `there is no user with this id` })
+      return
     } else if (!validate(parameter)) {
       res.send(HttpCode.NotFound, { message: `this Id: ${parameter} is not valid` })
       return
     }
     
-    if (userI === -1) {
-      res.send(HttpCode.BadReq, { message: `there is no user with this id` })
-      return
-    }
+    
     
     db.splice(userI, 1)
     send(db)
