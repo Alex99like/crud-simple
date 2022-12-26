@@ -3,8 +3,6 @@ import { UserService } from './service/User.js';
 import { HttpCode, METHOD, ReqType, ResType } from './helpers/statusCode.js';
 import { IUser } from './helpers/user.interface.js';
 import EventEmitter from 'events'
-import { checkCreate, checkUpdate } from './helpers/checkReq.js';
-import { v4, validate } from 'uuid'
 
 export class Server {
   db: IUser[];

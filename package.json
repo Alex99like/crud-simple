@@ -18,7 +18,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "npx nodemon",
+    "start:dev": "nodemon --watch src --exec ts-node src/main.ts",
     "start:prod": "webpack --watch"
   },
   "repository": {

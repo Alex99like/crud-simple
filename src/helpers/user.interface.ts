@@ -1,5 +1,3 @@
-import { v4 } from 'uuid'
-
 export interface IUser {
   id: string
   username: string
