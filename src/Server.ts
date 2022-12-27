@@ -19,14 +19,6 @@ export class Server {
       ],
       age: 24
     },
-    {
-      id: '1234124',
-      username: "NoValid",
-      hobbies: [
-        "game"
-      ],
-      age: 20
-    }
   ]
     this.emitter = new EventEmitter()
     this.server = this.createServer()
