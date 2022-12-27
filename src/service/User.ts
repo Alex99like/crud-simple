@@ -53,7 +53,7 @@ export class UserService {
 
   updateUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     const index = db.findIndex(el => el.id === parameter)
-    if (parameter) {
+    if (!parameter) {
       res.send(HttpCode.BadReq, { message: `id not specified` })
       return
     } else if (index === -1) {
