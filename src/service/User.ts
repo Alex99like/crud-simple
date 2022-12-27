@@ -1,7 +1,7 @@
 import { v4, validate } from "uuid";
-import { checkCreate, checkUpdate } from "../helpers/checkReq.js";
-import { HttpCode, ReqType, ResType } from "../helpers/statusCode.js";
-import { IUser } from "../helpers/user.interface.js";
+import { checkCreate, checkUpdate } from "../helpers/checkReq";
+import { HttpCode, ReqType, ResType } from "../helpers/statusCode";
+import { IUser } from "../helpers/user.interface";
 
 export class UserService {
   getUser(req: ReqType, res: ResType, parameter: string, db: IUser[]) {

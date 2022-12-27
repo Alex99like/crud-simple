@@ -1,8 +1,8 @@
-import { Server } from './Server.js';
+import { Server } from './Server';
 import { config } from 'dotenv'
 config()
 import cluster from 'cluster'
-import { Balancer } from './Balancer.js'
+import { Balancer } from './Balancer'
 
 let port = process.env.PORT || 4000
 

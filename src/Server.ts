@@ -1,7 +1,7 @@
 import http from 'http'
-import { UserService } from './service/User.js';
-import { HttpCode, METHOD, ReqType, ResType } from './helpers/statusCode.js';
-import { IUser } from './helpers/user.interface.js';
+import { UserService } from './service/User';
+import { HttpCode, METHOD, ReqType, ResType } from './helpers/statusCode';
+import { IUser } from './helpers/user.interface';
 import EventEmitter from 'events'
 
 export class Server {

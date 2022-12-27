@@ -14,12 +14,11 @@
   },
   "name": "crud-simple",
   "description": "",
-  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon --watch src --exec ts-node src/main.ts",
-    "start:prod": "webpack --watch"
+    "start:dev": "nodemon src/main.ts",
+    "start:prod": "webpack && node dist/bundle.js"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import http from 'http'
-import { IUser } from './user.interface.js';
+import { IUser } from './user.interface';
 
 export enum HttpCode {
   Success = 200,

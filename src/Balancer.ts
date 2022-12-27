@@ -1,7 +1,7 @@
 import os from 'os'
 import cluster, { Worker } from 'cluster'
 import http from 'http'
-import { IUser } from './helpers/user.interface.js'
+import { IUser } from './helpers/user.interface'
 
 export class Balancer {
   cpus: number
@@ -27,6 +27,7 @@ export class Balancer {
 
   exit() {
     process.on('SIGINT', () => {
+      this.server.close()
       this.workers.forEach(worker => worker.kill())
     })
   }
