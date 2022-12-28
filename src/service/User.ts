@@ -46,7 +46,7 @@ export class UserService {
             res.send(HttpCode.BadReq, { errors })
           }
         } catch(e) {
-          res.send(HttpCode.ErrorServer, MessageErr.failed('create'))
+          res.send(HttpCode.BadReq, MessageErr.failed('create'))
         }
       })
     }
@@ -55,7 +55,7 @@ export class UserService {
   updateUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     const index = db.findIndex(el => el.id === parameter)
     if (!parameter) {
-      res.send(HttpCode.BadReq, MessageErr.notID)
+      res.send(HttpCode.NotFound, MessageErr.notID)
       return
     } else if (!validate(parameter)) {
       res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
@@ -91,7 +91,7 @@ export class UserService {
             res.send(HttpCode.BadReq, { errors })
           }
         } catch(e) {
-          res.send(HttpCode.ErrorServer, MessageErr.failed('update'))
+          res.send(HttpCode.BadReq, MessageErr.failed('update'))
         }      
       })
     }
