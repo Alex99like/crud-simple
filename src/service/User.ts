@@ -1,5 +1,6 @@
 import { v4, validate } from "uuid";
 import { checkCreate, checkUpdate } from "../helpers/checkReq";
+import { MessageErr } from "../helpers/ErrorMessage";
 import { HttpCode, ReqType, ResType } from "../helpers/statusCode";
 import { IUser } from "../helpers/user.interface";
 
@@ -11,10 +12,10 @@ export class UserService {
         if (validate(user.id)) {
           res.send(HttpCode.Success, user)
         } else {
-          res.send(HttpCode.BadReq, { message: `this Id: ${user.id} is not valid` })
+          res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
         }
       } else {
-        res.send(HttpCode.NotFound, { message: `there is no user with the same - ${parameter}` })
+        res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
       }
     } else {
       res.send(HttpCode.Success, db)
@@ -23,7 +24,7 @@ export class UserService {
 
   createUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     if (parameter) {
-      res.send(HttpCode.NotFound, { message: 'Not Found' })
+      res.send(HttpCode.NotFound, MessageErr.notFound)
       return
     } else {
       let body = ''
@@ -45,7 +46,7 @@ export class UserService {
             res.send(HttpCode.BadReq, { errors })
           }
         } catch(e) {
-          res.send(HttpCode.ErrorServer, { message: `failed to create user` })
+          res.send(HttpCode.ErrorServer, MessageErr.failed('create'))
         }
       })
     }
@@ -54,13 +55,13 @@ export class UserService {
   updateUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     const index = db.findIndex(el => el.id === parameter)
     if (!parameter) {
-      res.send(HttpCode.BadReq, { message: `id not specified` })
+      res.send(HttpCode.BadReq, MessageErr.notID)
       return
     } else if (index === -1) {
-      res.send(HttpCode.NotFound, { message: `Not Found: we won't find a user with this id` })
+      res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
       return
     } else if (!validate(parameter)) {
-      res.send(HttpCode.BadReq, { message: `this Id: ${parameter} is not valid` })
+      res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
       return
     } else {
       let body = ''
@@ -90,7 +91,7 @@ export class UserService {
             res.send(HttpCode.BadReq, { errors })
           }
         } catch(e) {
-          res.send(HttpCode.ErrorServer, { message: `failed to update user` })
+          res.send(HttpCode.ErrorServer, MessageErr.failed('update'))
         }      
       })
     }
@@ -101,13 +102,13 @@ export class UserService {
   removeUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     const userI = db.findIndex(el => el.id === parameter)
     if (!parameter) {
-      res.send(HttpCode.BadReq, { message: `id not specified` })
+      res.send(HttpCode.BadReq, MessageErr.notID)
       return
     } else if (userI === -1) {
-      res.send(HttpCode.BadReq, { message: `there is no user with this id` })
+      res.send(HttpCode.BadReq, MessageErr.isNotUserID(parameter))
       return
     } else if (!validate(parameter)) {
-      res.send(HttpCode.NotFound, { message: `this Id: ${parameter} is not valid` })
+      res.send(HttpCode.NotFound, MessageErr.isNotValidID(parameter))
       return
     }
     
@@ -115,6 +116,6 @@ export class UserService {
     
     db.splice(userI, 1)
     send(db)
-    res.send(HttpCode.Delete , { message: `user with id: ${parameter} deleted` })
+    res.send(HttpCode.Delete, null)
   }
 }

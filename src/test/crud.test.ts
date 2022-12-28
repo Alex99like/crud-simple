@@ -3,15 +3,6 @@ import request from 'supertest'
 import http from 'http'
 import { IUser } from '../helpers/user.interface'
 
-const testDB = [{
-  id: "f0222d8c-2ce1-4c36-a41e-3593d8c7c621",
-  username: "Alex",  
-  hobbies: [
-    "game"
-  ],
-  age: 24
-}]
-
 const testSend = {
   username: "Test",  
   hobbies: [
@@ -39,7 +30,7 @@ describe('Server Crud', function() {
      const res = await response.get('/api/users')
       .set('Accept', 'application/json')
         expect(res.status).toEqual(200);
-        expect(JSON.parse(res.text)).toEqual(testDB)
+        expect(JSON.parse(res.text)).toEqual([])
   });
 
   it('POST / create user', async () => {

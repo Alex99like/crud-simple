@@ -11,15 +11,7 @@ export class Server {
   userService: UserService;
 
   constructor() {
-    this.db = [{
-      id: "f0222d8c-2ce1-4c36-a41e-3593d8c7c621",
-      username: "Alex",  
-      hobbies: [
-        "game"
-      ],
-      age: 24
-    },
-  ]
+    this.db = []
     this.emitter = new EventEmitter()
     this.server = this.createServer()
     this.userService = new UserService()

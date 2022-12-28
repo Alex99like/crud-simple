@@ -2,6 +2,10 @@ import os from 'os'
 import cluster, { Worker } from 'cluster'
 import http from 'http'
 import { IUser } from './helpers/user.interface'
+import { config } from 'dotenv'
+config()
+
+let port = process.env.PORT || 4000
 
 export class Balancer {
   cpus: number
@@ -74,9 +78,14 @@ export class Balancer {
 
         const request = http.request({
           host: 'localhost',
-          port: 4000 + currentId,
+          port: +port + currentId,
           path: req.url,
           method: req.method,
+        })
+
+        request.on('error', () => {
+          res.writeHead(500)
+          res.end('Error Connect')
         })
         request.write(body)
         request.end()
