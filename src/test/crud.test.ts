@@ -1,6 +1,5 @@
 import { Server } from '../Server'
 import request from 'supertest'
-import http from 'http'
 import { IUser } from '../helpers/user.interface'
 
 const testSend = {

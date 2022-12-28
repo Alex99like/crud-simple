@@ -8,14 +8,14 @@ export class UserService {
   getUser(req: ReqType, res: ResType, parameter: string, db: IUser[]) {
     if (parameter) {
       const [user] = db.filter(el => el.id === parameter)
-      if (user) {
-        if (validate(user.id)) {
+      if (validate(parameter)) {
+        if (user) {
           res.send(HttpCode.Success, user)
         } else {
-          res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
+          res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter)) 
         }
       } else {
-        res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
+        res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
       }
     } else {
       res.send(HttpCode.Success, db)
@@ -57,11 +57,11 @@ export class UserService {
     if (!parameter) {
       res.send(HttpCode.BadReq, MessageErr.notID)
       return
-    } else if (index === -1) {
-      res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
-      return
     } else if (!validate(parameter)) {
       res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
+      return
+    } else if (index === -1) {
+      res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
       return
     } else {
       let body = ''
@@ -104,13 +104,13 @@ export class UserService {
     if (!parameter) {
       res.send(HttpCode.BadReq, MessageErr.notID)
       return
-    } else if (userI === -1) {
-      res.send(HttpCode.BadReq, MessageErr.isNotUserID(parameter))
-      return
     } else if (!validate(parameter)) {
       res.send(HttpCode.NotFound, MessageErr.isNotValidID(parameter))
       return
-    }
+    } else if (userI === -1) {
+      res.send(HttpCode.BadReq, MessageErr.isNotUserID(parameter))
+      return
+    } 
     
     
     
