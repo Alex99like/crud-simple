@@ -47,6 +47,7 @@ export class Server {
   
   createServer() {
     return http.createServer((req, res) => {
+      try {
       (res as ResType).send = (code: HttpCode, data: any) => {
         res.writeHead(code)
         res.end(JSON.stringify(data))
@@ -58,11 +59,14 @@ export class Server {
         res.end(JSON.stringify(`this url does not exist`))
       } else {
         const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
-      
+
         if (!emit) {
           res.writeHead(HttpCode.NotFound)
           res.end(JSON.stringify(`this url does not exist`))
         }
+      }
+      } catch(e) {
+        console.log(Error)
       }
     })
   }
