@@ -74,13 +74,15 @@ export class Balancer {
       req.on('end', () => {
 
         const currentId = this.switchWorker()
-        console.log(currentId)
 
         const request = http.request({
           host: 'localhost',
           port: +port + currentId,
           path: req.url,
           method: req.method,
+          headers: {
+            'balancer': 'true'
+          }
         })
 
         request.on('error', () => {

@@ -3,6 +3,8 @@ import { UserService } from './service/User';
 import { HttpCode, METHOD, ReqType, ResType } from './helpers/statusCode';
 import { IUser } from './helpers/user.interface';
 import EventEmitter from 'events'
+import cluster from "cluster";
+import {MessageErr} from "./helpers/ErrorMessage";
 
 export class Server {
   db: IUser[];
@@ -58,15 +60,26 @@ export class Server {
         res.writeHead(HttpCode.NotFound)
         res.end(JSON.stringify(`this url does not exist`))
       } else {
-        const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
+        if (cluster.worker) {
+          if (req.headers['balancer']) {
+            const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
 
-        if (!emit) {
-          res.writeHead(HttpCode.NotFound)
-          res.end(JSON.stringify(`this url does not exist`))
+            if (!emit) {
+              (res as ResType).send(HttpCode.NotFound, MessageErr.urlExists)
+            }
+          } else {
+            (res as ResType).send(HttpCode.NotFound, MessageErr.balancer)
+          }
+        } else {
+          const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
+
+          if (!emit) {
+            (res as ResType).send(HttpCode.NotFound, MessageErr.urlExists)
+          }
         }
       }
       } catch(e) {
-        console.log(Error)
+        (res as ResType).send(HttpCode.ErrorServer, 'Server Error')
       }
     })
   }
