@@ -22,86 +22,92 @@ export class UserService {
         res.send(HttpCode.Success, db)
       }
     } catch(e) {
-      console.log('Error')
+      res.send(HttpCode.ErrorServer, "Server Error")
     }
 
   }
 
   createUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
-    if (parameter) {
-      res.send(HttpCode.NotFound, MessageErr.notFound)
-      return
-    } else {
-      let body = ''
-      req.on('data', (chunk) => {
-        body += chunk
-      })
+    try {
+      if (parameter) {
+        res.send(HttpCode.NotFound, MessageErr.notFound)
+        return
+      } else {
+        let body = ''
+        req.on('data', (chunk) => {
+          body += chunk
+        })
 
-      req.on('end', () => {
-        try {
-          const user = JSON.parse(body)
-          const errors = checkCreate(user)
+        req.on('end', () => {
+          try {
+            const user = JSON.parse(body)
+            const errors = checkCreate(user)
 
-          if (errors.length === 0) {
-            const id = v4()
-            db.push({ id, username: user.username, age: user.age, hobbies: user.hobbies })
-            send(db)
-            res.send(HttpCode.Created, { id, ...user })
-          } else {
-            res.send(HttpCode.BadReq, { errors })
+            if (errors.length === 0) {
+              const id = v4()
+              db.push({ id, username: user.username, age: user.age, hobbies: user.hobbies })
+              send(db)
+              res.send(HttpCode.Created, { id, ...user })
+            } else {
+              res.send(HttpCode.BadReq, { errors })
+            }
+          } catch(e) {
+            res.send(HttpCode.BadReq, MessageErr.failed('create'))
           }
-        } catch(e) {
-          res.send(HttpCode.BadReq, MessageErr.failed('create'))
-        }
-      })
+        })
+      }
+    } catch (e) {
+      res.send(HttpCode.ErrorServer, "Server Error")
     }
   }
 
   updateUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
-    const index = db.findIndex(el => el.id === parameter)
-    if (!parameter) {
-      res.send(HttpCode.NotFound, MessageErr.notID)
-      return
-    } else if (!validate(parameter)) {
-      res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
-      return
-    } else if (index === -1) {
-      res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
-      return
-    } else {
-      let body = ''
-      req.on('data', (chunk) => {
-        body += chunk
-      })
-      req.on('end', () => {
-        try {
-          const user = JSON.parse(body)
-          const errors = checkUpdate(user)
+    try {
+      const index = db.findIndex(el => el.id === parameter)
+      if (!parameter) {
+        res.send(HttpCode.NotFound, MessageErr.notID)
+        return
+      } else if (!validate(parameter)) {
+        res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
+        return
+      } else if (index === -1) {
+        res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
+        return
+      } else {
+        let body = ''
+        req.on('data', (chunk) => {
+          body += chunk
+        })
+        req.on('end', () => {
+          try {
+            const user = JSON.parse(body)
+            const errors = checkUpdate(user)
 
-          if (errors.length === 0) {
-            
-            const prevItem = db[index] 
-            const userItem = {
-              id: prevItem.id,
-              username: user.username ? user.username : prevItem.username,
-              age: user.age ? user.age : prevItem.age,
-              hobbies: user.hobbies ? user.hobbies : prevItem.hobbies,
+            if (errors.length === 0) {
+
+              const prevItem = db[index]
+              const userItem = {
+                id: prevItem.id,
+                username: user.username ? user.username : prevItem.username,
+                age: user.age ? user.age : prevItem.age,
+                hobbies: user.hobbies ? user.hobbies : prevItem.hobbies,
+              }
+
+              db.splice(index, 1, userItem)
+              send(db)
+              res.send(HttpCode.Success, userItem)
+
+            } else {
+              res.send(HttpCode.BadReq, { errors })
             }
-
-            db.splice(index, 1, userItem)
-            send(db)
-            res.send(HttpCode.Success, userItem)
-
-          } else {
-            res.send(HttpCode.BadReq, { errors })
+          } catch(e) {
+            res.send(HttpCode.BadReq, MessageErr.failed('update'))
           }
-        } catch(e) {
-          res.send(HttpCode.BadReq, MessageErr.failed('update'))
-        }      
-      })
+        })
+      }
+    } catch (e) {
+      res.send(HttpCode.ErrorServer, "Server Error")
     }
-
-    
   }
 
   removeUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
@@ -124,7 +130,7 @@ export class UserService {
       send(db)
       res.send(HttpCode.Delete, null)
     } catch (e) {
-      console.log('Error')
+      res.send(HttpCode.ErrorServer, "Server Error")
     }
   }
 }
