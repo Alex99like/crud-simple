@@ -46,38 +46,38 @@ export class Server {
   path(method: string, root: string = 'api', path: string = 'users') {
     return `${root}/${path}:${method}`
   }
+
+  emit(req: http.IncomingMessage, res: http.ServerResponse, root: string, path: string, parameter: string) {
+    const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
+
+    if (!emit) {
+      (res as ResType).send(HttpCode.NotFound, MessageErr.urlExists)
+    }
+  }
   
   createServer() {
     return http.createServer((req, res) => {
       try {
-      (res as ResType).send = (code: HttpCode, data: any) => {
-        res.writeHead(code)
-        res.end(JSON.stringify(data))
-      }
+        (res as ResType).send = (code: HttpCode, data: any) => {
+          res.writeHead(code)
+          res.end(JSON.stringify(data))
+        }
 
-      const [root = '', path = '', parameter, error] = req.url!.split('/').slice(1)
-      if (error) {
-        res.writeHead(HttpCode.NotFound)
-        res.end(JSON.stringify(`this url does not exist`))
-      } else {
-        if (cluster.worker) {
-          if (req.headers['balancer']) {
-            const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
+        const [root = '', path = '', parameter, error] = req.url!.split('/').slice(1)
 
-            if (!emit) {
-              (res as ResType).send(HttpCode.NotFound, MessageErr.urlExists)
+        if (error) {
+          (res as ResType).send(HttpCode.NotFound, MessageErr.urlExists)
+        } else {
+          if (cluster.worker) {
+            if (req.headers['balancer']) {
+              this.emit(req, res, root, path, parameter)
+            } else {
+              (res as ResType).send(HttpCode.NotFound, MessageErr.balancer)
             }
           } else {
-            (res as ResType).send(HttpCode.NotFound, MessageErr.balancer)
-          }
-        } else {
-          const emit = this.emitter.emit(this.path(req.method!, root, path), req, res, parameter, this.db, this.sendDB)
-
-          if (!emit) {
-            (res as ResType).send(HttpCode.NotFound, MessageErr.urlExists)
+            this.emit(req, res, root, path, parameter)
           }
         }
-      }
       } catch(e) {
         (res as ResType).send(HttpCode.ErrorServer, 'Server Error')
       }
