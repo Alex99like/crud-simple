@@ -117,10 +117,10 @@ export class UserService {
         res.send(HttpCode.BadReq, MessageErr.notID)
         return
       } else if (!validate(parameter)) {
-        res.send(HttpCode.NotFound, MessageErr.isNotValidID(parameter))
+        res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
         return
       } else if (userI === -1) {
-        res.send(HttpCode.BadReq, MessageErr.isNotUserID(parameter))
+        res.send(HttpCode.NotFound, MessageErr.isNotUserID(parameter))
         return
       }
 

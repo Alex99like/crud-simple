@@ -2,7 +2,7 @@ import path from 'path';
 
 export default {
   mode: 'production',
-    entry: './src/main.ts',
+    entry: './src/app.ts',
     output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'dist'),
