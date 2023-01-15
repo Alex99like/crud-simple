@@ -39,7 +39,7 @@ Then go to https://www.postman.com/ or https://www.insomnia.com/ and send reques
 }
 ```
 
-**Delete user** -> DELETE http://127.0.0.1:4000/api/users/${id}
+**Delete user** -> DELETE http://localhost:4000/api/users/${id}
 
 **errors are returned in the format**
 ```
