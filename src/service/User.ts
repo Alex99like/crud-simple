@@ -7,6 +7,7 @@ import { IUser } from "../helpers/user.interface";
 export class UserService {
   getUser(req: ReqType, res: ResType, parameter: string, db: IUser[]) {
     try {
+      //throw new Error()
       if (parameter) {
         const [user] = db.filter(el => el.id === parameter)
         if (validate(parameter)) {
@@ -29,6 +30,7 @@ export class UserService {
 
   createUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     try {
+      //throw new Error()
       if (parameter) {
         res.send(HttpCode.NotFound, MessageErr.notFound)
         return
@@ -63,6 +65,7 @@ export class UserService {
 
   updateUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     try {
+      //throw new Error()
       const index = db.findIndex(el => el.id === parameter)
       if (!parameter) {
         res.send(HttpCode.NotFound, MessageErr.notID)
@@ -112,6 +115,7 @@ export class UserService {
 
   removeUser(req: ReqType, res: ResType, parameter: string, db: IUser[], send: (db: IUser[]) => void) {
     try {
+      //throw new Error()
       const userI = db.findIndex(el => el.id === parameter)
       if (!parameter) {
         res.send(HttpCode.BadReq, MessageErr.notID)

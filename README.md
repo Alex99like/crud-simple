@@ -5,20 +5,20 @@ First of all clone the repository:  https://github.com/Alex99like/crud-simple `b
 You can now run
 
 ```
-npm run start:dev
-npm run start:multi
-npm run start:prod
+npm run start:dev //running in dev mode
+npm run start:multi // ranning balancer
+npm run start:prod //assembly production
 ```
 
 to start your application
 
 Then go to https://www.postman.com/ or https://www.insomnia.com/ and send requests:
 
-**Get all users**: GET http://127.0.0.1:4000/api/users
+**Get all users**: GET http://localhost:4000/api/users
 
-**Get user by id**: GET http://127.0.0.1:4000/api/users/${idUser}
+**Get user by id**: GET http://localhost:4000/api/users/${idUser} 
 
-**Create new user**: POST http://127.0.0.1:4000/api/users + body raw JSON
+**Create new user**: POST http://localhost:4000/api/users + body raw JSON
 ```
 {
     "username": string,
@@ -27,7 +27,7 @@ Then go to https://www.postman.com/ or https://www.insomnia.com/ and send reques
 }
 ```
 
-**Update user** -> PUT http://127.0.0.1:4000/api/users/${id} + body raw JSON
+**Update user** -> PUT http://localhost:4000/api/users/${id} + body raw JSON
 
 **PUT** works the same way as **PATH**, you can update it in whole or in part
 
@@ -41,8 +41,12 @@ Then go to https://www.postman.com/ or https://www.insomnia.com/ and send reques
 
 **Delete user** -> DELETE http://127.0.0.1:4000/api/users/${id}
 
+**errors are returned in the format**
+```
+{ error: 'message error' } { errors: 'message errors' }
+```
 
-***FYI:*** uncomment 3 lines in src/user/userService/createUser.ts and send POST request for checking 500 Internal Server Error
+***FYI:*** in src/service/User.ts there are commented out throw Error() to check 500 Internal Server Error
 
 >
 >
