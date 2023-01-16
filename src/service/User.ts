@@ -118,7 +118,7 @@ export class UserService {
       //throw new Error()
       const userI = db.findIndex(el => el.id === parameter)
       if (!parameter) {
-        res.send(HttpCode.BadReq, MessageErr.notID)
+        res.send(HttpCode.NotFound, MessageErr.notID)
         return
       } else if (!validate(parameter)) {
         res.send(HttpCode.BadReq, MessageErr.isNotValidID(parameter))
