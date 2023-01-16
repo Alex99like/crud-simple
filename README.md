@@ -46,6 +46,16 @@ Return Data
 }
 ```
 
+Return New User
+
+```
+    "id": string
+    "username": string,
+    "age": number,
+    "hobbies": string[]
+```
+
+
 **Update user** -> PUT http://localhost:4000/api/users/${id} + body raw JSON
 
 Return Update User
