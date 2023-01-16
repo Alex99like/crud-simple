@@ -15,8 +15,27 @@ to start your application
 Then go to https://www.postman.com/ or https://www.insomnia.com/ and send requests:
 
 **Get all users**: GET http://localhost:4000/api/users
+Return Data 
+
+```
+Array<{
+    "id": string
+    "username": string,
+    "age": number,
+    "hobbies": string[]
+}>
+```
 
 **Get user by id**: GET http://localhost:4000/api/users/${idUser} 
+
+Return Data
+
+```
+    "id": string
+    "username": string,
+    "age": number,
+    "hobbies": string[]
+```
 
 **Create new user**: POST http://localhost:4000/api/users + body raw JSON
 ```
@@ -29,7 +48,18 @@ Then go to https://www.postman.com/ or https://www.insomnia.com/ and send reques
 
 **Update user** -> PUT http://localhost:4000/api/users/${id} + body raw JSON
 
+Return Update User
+
+```
+    "id": string
+    "username": string,
+    "age": number,
+    "hobbies": string[]
+```
+
 **PUT** works the same way as **PATH**, you can update it in whole or in part
+
+you can change one field or all at once
 
 ```
 {
@@ -40,6 +70,8 @@ Then go to https://www.postman.com/ or https://www.insomnia.com/ and send reques
 ```
 
 **Delete user** -> DELETE http://localhost:4000/api/users/${id}
+
+Return Status Code 204 + empty body
 
 **errors are returned in the format**
 ```
